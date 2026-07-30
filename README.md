@@ -25,6 +25,52 @@ Docker, Git, Linux CLI를 활용하여 재현 가능한 개발 워크스테이�
 
 ---
 
+## 0. 터미널 기초 & 파일 권한 실습
+
+### 파일/디렉토리 생성
+
+실습용 파일과 디렉토리를 만들고 권한을 확인했다.
+
+```bash
+$ mkdir perm-test && cd perm-test
+$ touch sample.txt
+$ mkdir sample-dir
+$ ls -l
+drwxr-xr-x  2 daehyunchoi  staff  64 ... sample-dir
+-rw-r--r--  1 daehyunchoi  staff   0 ... sample.txt
+```
+
+### 권한 변경 실습 (chmod)
+
+권한 표기: `rwx`(읽기/쓰기/실행)를 소유자/그룹/그외 3묶음으로 나눠 표시.
+숫자 표기는 `r=4, w=2, x=1`의 합. 예) `644 = rw-r--r--`, `755 = rwxr-xr-x`.
+
+파일과 디렉토리 각각의 권한을 바꿨다가 원래대로 복원하며 변경 전/후를 비교했다.
+
+```bash
+# 변경 전: sample.txt = rw-r--r--(644), sample-dir = rwxr-xr-x(755)
+
+# 파일 권한 변경 (644 → 600: 그룹/그외 읽기 제거)
+$ chmod 600 sample.txt
+$ ls -l sample.txt
+-rw-------  1 daehyunchoi  staff  0 ... sample.txt
+
+# 디렉토리 권한 변경 (755 → 700: 그룹/그외 접근 제거)
+$ chmod 700 sample-dir
+$ ls -l
+drwx------  2 daehyunchoi  staff  64 ... sample-dir
+-rw-------  1 daehyunchoi  staff   0 ... sample.txt
+
+# 원래 권한으로 복원
+$ chmod 644 sample.txt
+$ chmod 755 sample-dir
+$ ls -l
+drwxr-xr-x  2 daehyunchoi  staff  64 ... sample-dir
+-rw-r--r--  1 daehyunchoi  staff   0 ... sample.txt
+```
+
+**관찰:** `600`, `700`으로 바꾸자 그룹/그외 권한(`r--`, `r-x`)이 `---`로 사라졌고, 복원 시 되돌아왔다. 폴더의 `x`는 "실행"이 아니라 "폴더 진입 가능"을 의미하므로 디렉토리는 보통 755를 사용한다.
+
 ## 1. Docker 설치 및 점검
 
 Docker(OrbStack) 버전과 데몬 동작 여부를 확인했다.
