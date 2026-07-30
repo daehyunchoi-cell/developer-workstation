@@ -176,9 +176,10 @@ c59474359b9b   my-web:1.0   "/docker-entrypoint.…"   Up       0.0.0.0:8080->80
 
 **브라우저 접속 화면:**
 
-⬇️ 여기에 이미지 첨부: localhost:8080 접속 화면 (주소창 포함)
+<img width="1466" height="850" alt="스크린샷 2026-07-30 오후 1 14 49" src="https://github.com/user-attachments/assets/0002a34c-5267-4a37-9826-70f43945074c" />
 
-⬇️ 여기에 이미지 첨부: localhost:8081 접속 화면 (주소창 포함)
+
+<img width="1466" height="853" alt="스크린샷 2026-07-30 오후 1 17 01" src="https://github.com/user-attachments/assets/04a9c0eb-2b01-4f59-9c01-4d6613cf9bf5" />
 
 ---
 
