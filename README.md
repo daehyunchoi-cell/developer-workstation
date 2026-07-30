@@ -21,7 +21,7 @@ Docker, Git, Linux CLI를 활용하여 재현 가능한 개발 워크스테이�
 - [x] Dockerfile 기반 커스텀 이미지 빌드
 - [x] 포트 매핑 접속 (8080, 8081 — 2회)
 - [x] 볼륨(데이터 영속성) 검증
-- [ ] Git 설정 및 GitHub 연동
+- [x] Git 설정 및 GitHub 연동
 
 ---
 
@@ -215,6 +215,26 @@ hello volume
 
 **결론:** 파일을 만든 컨테이너(vol-test)를 삭제했음에도, 새 컨테이너(vol-test2)에서 동일한 데이터를 읽을 수 있었다.
 데이터가 컨테이너가 아닌 볼륨(mydata)에 저장되기 때문이다.
+
+## 트러블슈팅
+
+### 1. Dockerfile 이름 오타로 빌드 실패 위험
+
+- **문제:** VS Code에서 설계도 파일을 만들 때 이름을 `Dockfile`로 잘못 지정했다. 이대로 `docker build`를 하면 Docker가 기본 파일명인 `Dockerfile`을 찾지 못해 실패한다.
+- **원인:** 파일명 오타(`Dockerfile` → `Dockfile`). `docker build`는 기본적으로 `Dockerfile`이라는 정확한 이름을 찾는다.
+- **해결:** 파일을 우클릭 → Rename으로 `Dockerfile`로 수정한 뒤 빌드했고, 정상적으로 이미지가 생성됐다.
+
+### 2. 따옴표 짝이 안 맞아 터미널이 입력 대기 상태에 갇힘
+
+- **문제:** 볼륨 실습 중 `docker exec ... bash -c "..."` 명령을 붙여넣는 과정에서 명령이 줄바꿈으로 쪼개지며 따옴표(`"`) 짝이 깨졌다. 터미널이 `dquote>` 상태로 바뀌어 다음 명령을 받지 않았다.
+- **원인:** 큰따옴표가 닫히지 않아, 셸이 "명령이 아직 끝나지 않았다"고 판단하고 나머지 입력을 기다렸다.
+- **해결:** `Control + C`로 입력을 취소해 프롬프트를 복구했다. 이후 `docker exec -it`로 컨테이너에 직접 진입한 뒤, 파일 작성 명령을 짧게 한 줄씩 실행해 따옴표 문제를 피했다.
+
+### 3. git push 시 비밀번호가 아닌 토큰 필요
+
+- **문제:** `git push` 실행 시 Username/Password를 물었고, GitHub 로그인 비밀번호로는 인증되지 않는다.
+- **원인:** GitHub는 2021년부터 HTTPS 방식에서 계정 비밀번호 인증을 폐지하고, Personal Access Token(PAT)을 요구한다.
+- **해결:** GitHub Settings → Developer settings에서 `repo` 권한의 classic 토큰을 발급받아 Password 자리에 입력해 push에 성공했다. (토큰은 비밀번호에 준하는 정보이므로 문서·스크린샷에 노출하지 않도록 마스킹함.)
 
 ## 6. Git 설정 및 GitHub 연동
 
