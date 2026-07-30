@@ -284,4 +284,44 @@ hello volume
 
 ## 6. Git 설정 및 GitHub 연동
 
-_(다음 단계에서 작성)_
+Git으로 로컬 버전 관리를 설정하고, GitHub 원격 저장소에 연결해 소스코드를 업로드했다.
+
+**Git과 GitHub의 역할 차이:**
+- **Git**: 내 컴퓨터에서 동작하는 버전 관리 도구. 파일의 변경 이력을 커밋 단위로 기록한다. (로컬)
+- **GitHub**: 그 커밋들을 인터넷에 올려 공유·협업하는 웹 플랫폼. (원격)
+
+### Git 사용자 정보 및 기본 브랜치 설정
+
+```bash
+$ git config --global user.name "daehyunchoi-cell"
+$ git config --global user.email "***@***"   # 민감정보 마스킹
+$ git config --list
+credential.helper=osxkeychain
+init.defaultbranch=main
+user.name=daehyunchoi-cell
+user.email=***@***
+```
+
+### 로컬 저장소 초기화 및 첫 커밋
+
+```bash
+$ git init
+Initialized empty Git repository in .../developer-workstation/.git/
+
+$ git add .
+$ git commit -m "첫 커밋: Docker 실습 및 README 작성"
+[main (root-commit) 668d745] 첫 커밋: Docker 실습 및 README 작성
+ 3 files changed, 240 insertions(+)
+```
+
+### GitHub 원격 저장소 연결 및 push
+
+```bash
+$ git remote add origin https://github.com/daehyunchoi-cell/developer-workstation.git
+$ git branch -M main
+$ git push -u origin main
+ * [new branch]      main -> main
+branch 'main' set up to track 'origin/main'.
+```
+
+**인증:** GitHub는 HTTPS 비밀번호 인증을 지원하지 않으므로, Personal Access Token(PAT, `repo` 권한)을 발급해 push 인증에 사용했다. (토큰은 문서에 노출하지 않음)
