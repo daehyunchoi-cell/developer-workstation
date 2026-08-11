@@ -1,6 +1,6 @@
 # 개발자용 작업실 꾸미기
 
-## 프로젝트 개요
+## 📌프로젝트 개요
 
 Docker, Git, Linux CLI를 활용하여 재현 가능한 개발 워크스테이션 환경을 구축하는 프로젝트입니다.
 
@@ -11,7 +11,7 @@ Docker, Git, Linux CLI를 활용하여 재현 가능한 개발 워크스테이�
 - Container Runtime: OrbStack
 - Editor: Visual Studio Code
 
-## 프로젝트 디렉토리 구조
+## 📂프로젝트 디렉토리 구조
 
 ### 디렉토리 설계 개요
 developer-workstation/
@@ -57,7 +57,7 @@ developer-workstation/
 - test_files/ 디렉토리 및 내부 파일 3개 모두 제거
 - 재귀적 삭제로 디렉토리 구조 완전 제거
 
-## 수행 체크리스트
+## ✅수행 체크리스트
 
 - [x] 터미널 기본 조작 및 폴더 구성
 - [x] 파일/디렉토리 권한 변경 실습
@@ -95,18 +95,24 @@ drwxr-xr-x  2 daehyunchoi  staff  64 ... sample-dir
 
 ```bash
 # 변경 전: sample.txt = rw-r--r--(644), sample-dir = rwxr-xr-x(755)
+```
 
+```bash
 # 파일 권한 변경 (644 → 600: 그룹/그외 읽기 제거)
 $ chmod 600 sample.txt
 $ ls -l sample.txt
 -rw-------  1 daehyunchoi  staff  0 ... sample.txt
+```
 
+```bash
 # 디렉토리 권한 변경 (755 → 700: 그룹/그외 접근 제거)
 $ chmod 700 sample-dir
 $ ls -l
 drwx------  2 daehyunchoi  staff  64 ... sample-dir
 -rw-------  1 daehyunchoi  staff   0 ... sample.txt
+```
 
+```bash
 # 원래 권한으로 복원
 $ chmod 644 sample.txt
 $ chmod 755 sample-dir
@@ -116,6 +122,8 @@ drwxr-xr-x  2 daehyunchoi  staff  64 ... sample-dir
 ```
 
 **관찰:** `600`, `700`으로 바꾸자 그룹/그외 권한(`r--`, `r-x`)이 `---`로 사라졌고, 복원 시 되돌아왔다. 폴더의 `x`는 "실행"이 아니라 "폴더 진입 가능"을 의미하므로 디렉토리는 보통 755를 사용한다.
+
+---
 
 ## 1. Docker 설치 및 점검
 
@@ -142,6 +150,8 @@ Server:
  Architecture: aarch64
  Name: orbstack
 ```
+
+---
 
 ## 2. 컨테이너 실행 실습
 
@@ -208,6 +218,8 @@ CONTAINER ID   IMAGE    COMMAND            STATUS          NAMES
 $ docker rm -f keep-alive
 keep-alive
 ```
+
+---
 
 ## 3. 커스텀 이미지 빌드 (Dockerfile)
 
@@ -282,18 +294,21 @@ $ docker run -d --name web2 my-custom-nginx
 # 5. 확인: web2에는 수정 사항이 없음!
 $ docker exec web2 ls /usr/share/nginx/html/
 # test.txt 파일이 없음 (web1에만 있음)
-이미지 불변성의 장점
-장점	설명
-재현성	같은 이미지로 만든 컨테이너는 항상 동일한 환경
-신뢰성	이미지가 변경되지 않으므로 예측 가능한 동작
-버전 관리	이미지 태그로 버전 관리 가능 (v1.0, v2.0)
-배포 안정성	프로덕션에서 동일한 이미지 사용 보장
-변경이 필요하면?
-이미지를 수정하려면 새로운 이미지를 빌드해야 합니다:
+```
 
-bash
-📋 복사
+#### 이미지 불변성의 장점
+| 장점 | 설명 |
+|------|------|
+| 재현성 | 같은 이미지로 만든 컨테이너는 항상 동일한 환경 |
+| 신뢰성 | 이미지가 변경되지 않으므로 예측 가능한 동작 |
+| 버전 관리 | 이미지 태그로 버전 관리 가능 (v1.0, v2.0) |
+| 배포 안정성 | 프로덕션에서 동일한 이미지 사용 보장 |
+
+#### 변경이 필요하면?
+- 이미지를 수정하려면 새로운 이미지를 빌드해야 한다.
+
 # Dockerfile 수정
+```bash
 $ nano Dockerfile
 # (내용 변경)
 
@@ -302,6 +317,9 @@ $ docker build -t my-custom-nginx:v2 .
 
 # 새 이미지로 컨테이너 실행
 $ docker run -d my-custom-nginx:v2
+```
+
+---
 
 ## 4. 포트 매핑 및 접속 증거
 
@@ -332,8 +350,8 @@ c59474359b9b   my-web:1.0   "/docker-entrypoint.…"   Up       0.0.0.0:8080->80
 
 ### 포트 충돌 진단 및 해결
 
-Docker 컨테이너는 **네트워크 네임스페이스**라는 독립된 네트워크 환경에서 실행됩니다.
-호스트(Mac)의 포트와 컨테이너 포트를 매핑할 때, 호스트 포트가 이미 사용 중이면 충돌이 발생합니다.
+Docker 컨테이너는 **네트워크 네임스페이스**라는 독립된 네트워크 환경에서 실행된다.
+호스트(Mac)의 포트와 컨테이너 포트를 매핑할 때, 호스트 포트가 이미 사용 중이면 충돌이 발생한다.
 
 #### 네트워크 네임스페이스란?
 호스트 (macOS)
@@ -347,8 +365,9 @@ Docker 컨테이너는 **네트워크 네임스페이스**라는 독립된 네�
 컨테이너 2 (네임스페이스 격리)
 └── 포트 80 (nginx 실행)
 
-**각 컨테이너는 독립된 네트워크 환경을 가지므로, 같은 포트(80)를 사용해도 충돌하지 않습니다.**
-하지만 **호스트 포트는 공유되므로**, 같은 포트에 여러 컨테이너를 매핑할 수 없습니다.
+**각 컨테이너는 독립된 네트워크 환경을 가지므로, 같은 포트(80)를 사용해도 충돌하지 않는다.**
+하지만 **호스트 포트는 공유되므로**, 같은 포트에 여러 컨테이너를 매핑할 수 없다.
+
 
 #### 포트 충돌 진단 단계
 
@@ -367,23 +386,29 @@ COMMAND: 프로세스 이름 (node, python, java 등)
 PID: 프로세스 ID
 USER: 실행 사용자
 NODE NAME: 포트 상태 (LISTEN = 대기 중)
+```
 
-2단계: 포트를 사용 중인 프로세스 종료 또는 변경
-옵션 A: 기존 프로세스 종료
+#### 2단계: 포트를 사용 중인 프로세스 종료 또는 변경
+- 옵션 A: 기존 프로세스 종료
+```bash
 # PID 1234인 프로세스 종료
 $ kill 1234
 
 # 강제 종료가 필요한 경우
 $ kill -9 1234
+```
 
-옵션 B: 컨테이너 포트 매핑 변경
+- 옵션 B: 컨테이너 포트 매핑 변경
+```bash
 # 기존 컨테이너 중지
 $ docker stop web1
 
 # 다른 포트로 재실행
 $ docker run -d -p 9000:80 --name web1 my-web:1.0
+```
 
-3단계: 포트 충돌 해결 확인
+#### 3단계: 포트 충돌 해결 확인
+```bash
 # 포트 8080이 이제 사용 가능한지 확인
 $ lsof -i :8080
 # (출력 없음 = 포트 사용 가능)
@@ -392,10 +417,11 @@ $ lsof -i :8080
 $ docker ps
 CONTAINER ID   IMAGE        PORTS                  NAMES
 abc123def456   my-web:1.0   0.0.0.0:8080->80/tcp   web1
+```
 
-실제 포트 충돌 시나리오 및 해결
-시나리오: 포트 8080에서 충돌 발생
-
+#### 실제 포트 충돌 시나리오 및 해결
+- 시나리오: 포트 8080에서 충돌 발생
+```bash
 # 1. 현재 상태 확인
 $ docker ps
 CONTAINER ID   IMAGE        PORTS                  NAMES
@@ -417,16 +443,21 @@ $ lsof -i :8080
 $ docker restart web1
 
 # 6. 브라우저에서 http://localhost:8080 접속 성공
-보안 고려사항
-주의사항	설명
-포트 범위	1-1023: 시스템 포트 (root 권한 필요), 1024-65535: 사용자 포트
-방화벽	-p 0.0.0.0:8080:80 사용 시 모든 인터페이스에 노출 (보안 위험)
-로컬만 노출	-p 127.0.0.1:8080:80 사용 시 localhost에서만 접속 가능
-프로세스 강제 종료	kill -9는 정상 종료 기회를 주지 않으므로 마지막 수단
+```
+
+#### 보안 고려사항
+
+| 주의사항	 | 설명 |
+|------|----------|
+| 포트 범위	| 1-1023: 시스템 포트 (root 권한 필요), 1024-65535: 사용자 포트 |
+| 방화벽	| -p 0.0.0.0:8080:80 사용 시 모든 인터페이스에 노출 (보안 위험) |
+| 로컬만 노출	| -p 127.0.0.1:8080:80 사용 시 localhost에서만 접속 가능 |
+| 프로세스 강제 종료	| kill -9는 정상 종료 기회를 주지 않으므로 마지막 수단 |
+
 
 ### Dockerfile에서의 경로: 절대 경로 vs 상대 경로
 
-Dockerfile 작성 시 `COPY`, `WORKDIR`, `RUN` 등에서 경로를 지정할 때, **절대 경로**와 **상대 경로** 중 어느 것을 선택할지 결정해야 합니다.
+Dockerfile 작성 시 `COPY`, `WORKDIR`, `RUN` 등에서 경로를 지정할 때, **절대 경로**와 **상대 경로** 중 어느 것을 선택할지 결정해야 한다.
 
 #### 경로 선택 기준표
 
@@ -437,6 +468,7 @@ Dockerfile 작성 시 `COPY`, `WORKDIR`, `RUN` 등에서 경로를 지정할 때
 | **중첩된 디렉토리 구조** | 절대 경로 | 경로 추적이 명확함 | `WORKDIR /app/src/config` |
 | **빌드 컨텍스트 내 파일** | 상대 경로 | 빌드 컨텍스트 기준으로 동작 | `COPY ./docker/config.json /etc/app/` |
 
+
 #### 절대 경로 사용 (권장)
 
 **정의:** 컨테이너 루트(`/`)부터 시작하는 전체 경로
@@ -446,46 +478,54 @@ FROM nginx:alpine
 COPY site/ /usr/share/nginx/html/
 WORKDIR /usr/share/nginx/html/
 RUN ls -la
-장점:
+```
 
+- 장점
 ✅ 경로가 명확하고 예측 가능
 ✅ 다른 사람이 읽기 쉬움
 ✅ 컨테이너 내 정확한 위치 보장
-단점:
 
+- 단점
 ❌ 타이핑이 길어짐
-상대 경로 사용
+
+
+#### 상대 경로 사용
 정의: 현재 작업 디렉토리(WORKDIR)를 기준으로 한 경로
 
+```bash
 FROM nginx:alpine
 WORKDIR /usr/share/nginx/html/
 COPY site/ .
 RUN ls -la
-장점:
+```
 
+- 장점
 ✅ 코드가 간결함
 ✅ WORKDIR을 명시하면 구조가 명확
-단점:
 
+
+- 단점
 ❌ WORKDIR이 설정되지 않으면 혼동 가능
 ❌ 여러 WORKDIR 변경 시 추적 어려움
-실제 프로젝트에서의 경로 선택
+
+#### 실제 프로젝트에서의 경로 선택
 현재 프로젝트의 Dockerfile:
 FROM nginx:alpine
 LABEL org.opencontainers.image.title="my-custom-nginx"
 COPY site/ /usr/share/nginx/html/
 
-선택 이유:
-
-절대 경로 사용 (/usr/share/nginx/html/)
+선택 이유: 절대 경로 사용 (/usr/share/nginx/html/)
 
 nginx의 표준 웹 루트 위치로, 모든 nginx 사용자가 인식하는 경로
 명확하고 이식성이 높음
+
+
 상대 경로 사용 (site/)
 
 빌드 컨텍스트(프로젝트 루트) 기준으로 site/ 디렉토리 지정
 프로젝트 구조에 따라 유연하게 대응
-경로 오류 진단
+
+#### 경로 오류 진단
 문제: 잘못된 상대 경로
 
 FROM nginx:alpine
@@ -496,17 +536,18 @@ COPY ./site/ ./html/  # ❌ 상대 경로만 사용 → 위치 불명확
 FROM nginx:alpine
 COPY ./site/ /usr/share/nginx/html/  # ✅ 명확한 위치 지정
 
-베스트 프랙티스
-# 1. WORKDIR로 기본 작업 디렉토리 설정 (절대 경로)
+#### 베스트 프랙티스
+
+##### 1. WORKDIR로 기본 작업 디렉토리 설정 (절대 경로)
 WORKDIR /app
 
-# 2. 상대 경로로 파일 복사 (WORKDIR 기준)
+##### 2. 상대 경로로 파일 복사 (WORKDIR 기준)
 COPY . .
 
-# 3. 필요시 절대 경로로 명시적 지정
+##### 3. 필요시 절대 경로로 명시적 지정
 RUN mkdir -p /var/log/app
 
-
+---
 
 ## 5. 볼륨 (데이터 영속성)
 
@@ -543,7 +584,7 @@ hello volume
 
 ## 5-1. 바인드마운트 (Bind Mount): 호스트 디렉토리 직접 연결
 
-볼륨(Named Volume)은 Docker가 관리하는 저장 공간이지만, **바인드마운트**는 호스트의 특정 디렉토리를 컨테이너에 직접 연결합니다.
+볼륨(Named Volume)은 Docker가 관리하는 저장 공간이지만, **바인드마운트**는 호스트의 특정 디렉토리를 컨테이너에 직접 연결하는 것이다.
 
 ### 바인드마운트 vs 볼륨 비교
 
@@ -567,16 +608,20 @@ $ echo "This is shared data from host" > ~/docker-share/data/host-file.txt
 # 확인
 $ cat ~/docker-share/data/host-file.txt
 This is shared data from host
+```
 
-2단계: 바인드마운트로 컨테이너 실행
+#### 2단계: 바인드마운트로 컨테이너 실행
+```bash
 # -v 호스트경로:컨테이너경로 로 바인드마운트
 $ docker run -d --name bind-test -v ~/docker-share/data:/container-data ubuntu sleep infinity
 
 # 컨테이너에서 호스트 파일 확인
 $ docker exec bind-test cat /container-data/host-file.txt
 This is shared data from host
+```
 
-3단계: 컨테이너에서 파일 생성 및 호스트에서 확인
+#### 3단계: 컨테이너에서 파일 생성 및 호스트에서 확인
+```bash
 # 컨테이너에서 새 파일 생성
 $ docker exec bind-test sh -c "echo 'Created in container' > /container-data/container-file.txt"
 
@@ -592,41 +637,52 @@ drwxr-xr-x   3 user  staff    96 Jul 30 14:20 ..
 -rw-r--r--   1 user  staff    30 Jul 30 14:20 host-file.txt
 -rw-r--r--   1 user  staff    24 Jul 30 14:25 container-file.txt
 결론: 호스트와 컨테이너가 동일한 파일을 실시간으로 공유합니다.
+```
 
-4단계: 컨테이너 삭제 후 호스트 파일 확인
+####4단계: 컨테이너 삭제 후 호스트 파일 확인
+```bash
 # 컨테이너 삭제
 $ docker rm -f bind-test
 
 # 호스트 파일은 여전히 존재
 $ cat ~/docker-share/data/container-file.txt
 Created in container
+```
 
 중요: 바인드마운트는 호스트 파일시스템을 사용하므로, 컨테이너 삭제 후에도 호스트 파일은 유지됩니다.
 
-바인드마운트 사용 사례
-사례 1: 소스코드 개발 환경 공유
+
+#### 바인드마운트 사용 사례
+- 사례 1: 소스코드 개발 환경 공유
+```bash
 # 호스트의 프로젝트 디렉토리를 컨테이너의 /app에 연결
+
 $ docker run -d --name dev-app \
   -v ~/my-project:/app \
   node:16 \
   npm start
 
 # 호스트에서 코드 수정 → 컨테이너에서 즉시 반영
+```
 
-사례 2: 설정 파일 공유
+- 사례 2: 설정 파일 공유
+```bash 
 # 호스트의 설정 파일을 컨테이너에 제공
 $ docker run -d --name nginx-custom \
   -v ~/nginx-config/nginx.conf:/etc/nginx/nginx.conf \
   nginx:alpine
+```
 
-백업 및 복구 절차
-바인드마운트로 연결된 데이터를 백업하고 복구하는 방법입니다.
+#### 백업 및 복구 절차
 
-백업 절차
+#### 백업 절차
+```bash
 1단계: 백업 디렉토리 생성
 # 백업 저장소 생성
 $ mkdir -p ~/backups
+```
 
+```bash
 2단계: 데이터 백업 (tar 압축)
 # 바인드마운트 디렉토리를 tar로 압축
 $ tar -czf ~/backups/data-backup-$(date +%Y%m%d-%H%M%S).tar.gz ~/docker-share/data/
@@ -635,26 +691,30 @@ $ tar -czf ~/backups/data-backup-$(date +%Y%m%d-%H%M%S).tar.gz ~/docker-share/da
 $ ls -lh ~/backups/
 total 8
 -rw-r--r--  1 user  staff  512B Jul 30 14:30 data-backup-20260730-143000.tar.gz
+```
 
-설명:
-
-tar -czf: tar 파일 생성 (-c), gzip 압축 (-z), 파일명 지정 (-f)
+설명: tar -czf: tar 파일 생성 (-c), gzip 압축 (-z), 파일명 지정 (-f)
 $(date +%Y%m%d-%H%M%S): 백업 시간을 파일명에 포함 (예: 20260730-143000)
 
+```bash
 3단계: 정기 백업 자동화 (선택사항)
 # cron 작업으로 매일 자정에 백업
 $ crontab -e
 
 # 다음 라인 추가:
 0 0 * * * tar -czf ~/backups/data-backup-$(date +\%Y\%m\%d-\%H\%M\%S).tar.gz ~/docker-share/data/
+```
 
-복구 절차
+#### 복구 절차
+```bash
 1단계: 현재 데이터 확인
 $ ls -la ~/docker-share/data/
 total 16
 -rw-r--r--  1 user  staff  30 Jul 30 14:20 host-file.txt
 -rw-r--r--  1 user  staff  24 Jul 30 14:25 container-file.txt
+```
 
+```bash
 2단계: 데이터 삭제 (복구 테스트)
 # 실수로 파일 삭제
 $ rm ~/docker-share/data/container-file.txt
@@ -663,7 +723,9 @@ $ rm ~/docker-share/data/container-file.txt
 $ ls -la ~/docker-share/data/
 total 8
 -rw-r--r--  1 user  staff  30 Jul 30 14:20 host-file.txt
+```
 
+```bash
 3단계: 백업에서 복구
 # 백업 파일 확인
 $ ls ~/backups/
@@ -681,29 +743,34 @@ $ ls -la ~/docker-share/data/
 total 16
 -rw-r--r--  1 user  staff  30 Jul 30 14:20 host-file.txt
 -rw-r--r--  1 user  staff  24 Jul 30 14:25 container-file.txt  # 복구됨!
+```
 
-설명:
+- 설명
 
 tar -xzf: tar 파일 추출 (-x), gzip 해제 (-z), 파일명 지정 (-f)
 -C 경로: 추출 대상 디렉토리 지정
-백업/복구 체크리스트
-단계	명령	확인 사항
-백업	tar -czf ~/backups/backup.tar.gz 경로/	파일 생성 여부, 파일 크기
-백업 검증	tar -tzf ~/backups/backup.tar.gz	백업 내용 확인
-복구	tar -xzf ~/backups/backup.tar.gz -C /	파일 복구 여부
-복구 검증	ls -la 복구경로/	파일 개수, 타임스탐프
-바인드마운트 주의사항
-주의사항	설명	해결 방법
-권한 문제	컨테이너 사용자와 호스트 사용자의 UID 불일치	--user 옵션으로 사용자 지정
-성능 저하	macOS에서 바인드마운트 성능 낮음	볼륨 사용 권장
-파일 동기화 지연	호스트-컨테이너 간 파일 동기화 지연	명시적으로 sync 실행
-삭제 위험	호스트 파일 실수 삭제 시 복구 어려움	정기 백업 필수
+
+
+#### 백업/복구 체크리스트
+| 단계 | 명령 | 확인 사항 |
+|------|------|-----------|
+| 백업 | `tar -czf ~/backups/backup.tar.gz 경로/` | 파일 생성 여부, 파일 크기 |
+| 백업 검증 | `tar -tzf ~/backups/backup.tar.gz` | 백업 내용 확인 |
+| 복구 | `tar -xzf ~/backups/backup.tar.gz -C /` | 파일 복구 여부 |
+| 복구 검증 | `ls -la 복구경로/` | 파일 개수, 타임스탬프 |
+
+#### 바인드마운트 주의사항
+| 주의사항 | 설명 | 해결 방법 |
+|----------|------|-----------|
+| 권한 문제 | 컨테이너 사용자와 호스트 사용자의 UID 불일치 | `--user` 옵션으로 사용자 지정 |
+| 성능 저하 | macOS에서 바인드마운트 성능 낮음 | 볼륨 사용 권장 |
+| 파일 동기화 지연 | 호스트-컨테이너 간 파일 동기화 지연 | 명시적으로 sync 실행 |
+| 삭제 위험 | 호스트 파일 실수 삭제 시 복구 어려움 | 정기 백업 필수 |
+
 
 ## 트러블슈팅
 
-## 트러블슈팅
-
-Docker 사용 중 발생하는 일반적인 문제와 해결 방법을 정리했습니다.
+Docker 사용 중 발생하는 일반적인 문제와 해결 방법을 정리했다.
 
 ### 트러블슈팅 명령어 및 실행 시간 표
 
@@ -762,8 +829,11 @@ $ docker logs --tail 50 web1
 
 STATUS: 컨테이너 상태 (Up = 실행 중, Exited = 중지됨)
 Exited (1): 에러 코드 1로 종료됨 → docker logs 확인 필요
+```
 
-2. 컨테이너 로그 확인
+
+#### 2. 컨테이너 로그 확인
+```bash
 # 컨테이너 로그 출력
 $ docker logs web1
 [nginx] 2026-07-30 14:25:30 Starting nginx...
@@ -779,8 +849,10 @@ $ docker logs -f web1
 $ docker logs --tail 50 web1
 
 # 실행 시간: ~1초 (실시간 모니터링은 지속)
+```
 
-3. 포트 충돌 진단
+#### 3. 포트 충돌 진단
+```bash
 # macOS에서 포트 8080 사용 현황 확인
 $ lsof -i :8080
 COMMAND   PID     USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
@@ -792,8 +864,10 @@ node      1234    user   12u  IPv4 0x1234abcd      0t0  TCP *:8080 (LISTEN)
 $ kill 1234
 $ lsof -i :8080
 # (출력 없음 = 포트 해제됨)
+```
 
-4. 디스크 사용량 확인
+#### 4. 디스크 사용량 확인
+```bash 
 # Docker 시스템 전체 디스크 사용량
 $ docker system df
 TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
@@ -814,8 +888,10 @@ WARNING! This will remove:
 Total reclaimed space: 1.8GB
 
 # 실행 시간: 10초~1분 (삭제 대상 크기에 따라)
+```
 
-5. 컨테이너 리소스 사용량 모니터링
+#### 5. 컨테이너 리소스 사용량 모니터링
+```bash
 # 실시간 리소스 모니터링
 $ docker stats web1
 CONTAINER ID   NAME      CPU %     MEM USAGE / LIMIT     MEM %     NET I/O
@@ -826,8 +902,10 @@ abc123def456   web1      0.05%     12.3MiB / 1GiB        1.2%      1.2MB / 500KB
 # 특정 컨테이너만 모니터링
 $ docker stats --no-stream web1
 # (한 번만 출력)
+```
 
-6. 이미지 레이어 확인
+#### 6. 이미지 레이어 확인
+```bash 
 # 이미지의 각 레이어 크기 확인
 $ docker history my-web:1.0
 IMAGE          CREATED        CREATED BY                                      SIZE      COMMENT
@@ -841,8 +919,10 @@ jkl012mno345   2 weeks ago    FROM nginx:alpine                               42
 # 이미지 최적화 팁:
 # - 큰 레이어는 불필요한 파일 포함 여부 확인
 # - 여러 RUN 명령을 && 로 연결하여 레이어 수 감소
+```
 
-7. 네트워크 진단
+#### 7. 네트워크 진단
+```bash
 # Docker 네트워크 목록
 $ docker network ls
 NETWORK ID     NAME      DRIVER    SCOPE
@@ -867,9 +947,10 @@ $ docker network inspect bridge
 ]
 
 # 실행 시간: ~1초
+```
 
-트러블슈팅 체크리스트
-컨테이너 문제 발생 시 다음 순서로 진단하세요:
+#### 8. 트러블슈팅 체크리스트
+- 컨테이너 문제 발생 시 진단 순서
 1️⃣ 컨테이너 상태 확인
    └─ docker ps -a
    └─ STATUS 확인: Up / Exited?
@@ -894,13 +975,14 @@ $ docker network inspect bridge
    └─ docker network inspect 네트워크명
    └─ 컨테이너 IP 주소 확인
 
-일반적인 에러 메시지 및 해결
-에러 메시지	원인	해결 방법
-Error response from daemon: driver failed programming external connectivity	포트 충돌	lsof -i :포트 로 충돌 확인, 프로세스 종료 또는 포트 변경
-no such file or directory	마운트 경로 없음	호스트 경로 존재 확인: ls -la 경로
-permission denied	권한 부족	sudo 사용 또는 사용자 그룹 추가: sudo usermod -aG docker $USER
-image not found	이미지 없음	docker pull 이미지명 으로 다운로드
-container already exists	같은 이름의 컨테이너 존재	docker rm 컨테이너명 으로 삭제 후 재실
+- 일반적인 에러 메시지 및 해결
+| 에러 메시지 | 원인 | 해결 방법 |
+|-------------|------|-----------|
+| `Error response from daemon: driver failed programming external connectivity` | 포트 충돌 | `lsof -i :포트` 로 충돌 확인, 프로세스 종료 또는 포트 변경 |
+| `no such file or directory` | 마운트 경로 없음 | 호스트 경로 존재 확인: `ls -la 경로` |
+| `permission denied` | 권한 부족 | `sudo` 사용 또는 사용자 그룹 추가: `sudo usermod -aG docker $USER` |
+| `image not found` | 이미지 없음 | `docker pull 이미지명` 으로 다운로드 |
+| `container already exists` | 같은 이름의 컨테이너 존재 | `docker rm 컨테이너명` 으로 삭제 후 재실행 |
 
 
 ## 6. Git 설정 및 GitHub 연동
