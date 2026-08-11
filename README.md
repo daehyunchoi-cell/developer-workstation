@@ -227,19 +227,19 @@ keep-alive
 
    ### 선택한 방식
 
-기존 `nginx:alpine` 이미지를 베이스로, 정적 HTML을 얹어 커스텀 이미지를 만들었다.
+   기존 `nginx:alpine` 이미지를 베이스로, 정적 HTML을 얹어 커스텀 이미지를 만들었다.
 
-**Dockerfile:**
+      **Dockerfile:**
 
-```dockerfile
+```bash
 FROM nginx:alpine
 LABEL org.opencontainers.image.title="my-custom-nginx"
 COPY site/ /usr/share/nginx/html/
 ```
 
-**커스텀 포인트**
-- `FROM nginx:alpine` — nginx 웹서버가 포함된 경량 베이스 이미지 사용
-- `COPY site/ ...` — 내 정적 페이지(index.html)를 nginx 웹 루트에 복사하여 기본 페이지 대체
+   **### 커스텀 포인트**
+   - `FROM nginx:alpine` — nginx 웹서버가 포함된 경량 베이스 이미지 사용
+   - `COPY site/ ...` — 내 정적 페이지(index.html)를 nginx 웹 루트에 복사하여 기본 페이지 대체
 
    ### 빌드
 
@@ -279,28 +279,37 @@ docker build 실행
 컨테이너 내부 파일 수정 (컨테이너만 변경, 이미지는 영향 없음)
 ```
 
-      #### 실제 예시
+   ### 실제 예시
 
+
+1. 이미지 빌드
 ```bash
-# 1. 이미지 빌드
 $ docker build -t my-custom-nginx .
 Successfully built abc123def456
+```
 
-# 2. 컨테이너 실행
+2. 컨테이너 실행
+```bash
 $ docker run -d --name web1 my-custom-nginx
+```
 
-# 3. 컨테이너 내부 파일 수정
+3. 컨테이너 내부 파일 수정
+```bash
 $ docker exec web1 sh -c "echo 'modified' > /usr/share/nginx/html/test.txt"
+```
 
-# 4. 같은 이미지로 새 컨테이너 실행
+4. 같은 이미지로 새 컨테이너 실행
+```bash
 $ docker run -d --name web2 my-custom-nginx
+```
 
-# 5. 확인: web2에는 수정 사항이 없음!
+5. 확인: web2에는 수정 사항이 없음!
+```bash
 $ docker exec web2 ls /usr/share/nginx/html/
 # test.txt 파일이 없음 (web1에만 있음)
 ```
 
-      #### 이미지 불변성의 장점
+   ### 이미지 불변성의 장점
 | 장점 | 설명 |
 |------|------|
 | 재현성 | 같은 이미지로 만든 컨테이너는 항상 동일한 환경 |
@@ -308,8 +317,8 @@ $ docker exec web2 ls /usr/share/nginx/html/
 | 버전 관리 | 이미지 태그로 버전 관리 가능 (v1.0, v2.0) |
 | 배포 안정성 | 프로덕션에서 동일한 이미지 사용 보장 |
 
-      #### 변경이 필요하면?
-         - 이미지를 수정하려면 새로운 이미지를 빌드해야 한다.
+   ### 변경이 필요하면?
+      - 이미지를 수정하려면 새로운 이미지를 빌드해야 한다.
 
    ### Dockerfile 수정
 ```bash
