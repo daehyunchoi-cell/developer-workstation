@@ -14,6 +14,7 @@ Docker, Git, Linux CLI를 활용하여 재현 가능한 개발 워크스테이�
 ## 📂프로젝트 디렉토리 구조
 
 ### 디렉토리 설계 개요
+```bash
 developer-workstation/
 ├── site/ # 웹 서비스 파일
 │ ├── index.html # 메인 HTML 페이지
@@ -26,6 +27,7 @@ developer-workstation/
 │ ├── setup.sh # 초기 설정 스크립트
 │ └── deploy.sh # 배포 스크립트
 └── README.md # 프로젝트 문서
+```
 
 ### 각 디렉토리의 목적
 
@@ -235,7 +237,7 @@ LABEL org.opencontainers.image.title="my-custom-nginx"
 COPY site/ /usr/share/nginx/html/
 ```
 
-**커스텀 포인트:**
+**커스텀 포인트**
 - `FROM nginx:alpine` — nginx 웹서버가 포함된 경량 베이스 이미지 사용
 - `COPY site/ ...` — 내 정적 페이지(index.html)를 nginx 웹 루트에 복사하여 기본 페이지 대체
 
@@ -262,9 +264,10 @@ ubuntu:latest        3131b4cc82a7
 
 ### Docker 이미지의 불변성 (Immutability)
 
-Docker 이미지는 **빌드된 후 변경될 수 없는 불변 객체**입니다.
+Docker 이미지는 **빌드된 후 변경될 수 없는 불변 객체**이다.
 
 #### 이미지 불변성의 의미
+```bash
 Dockerfile 작성
 ↓
 docker build 실행
@@ -274,6 +277,7 @@ docker build 실행
 컨테이너 실행 (이미지 기반)
 ↓
 컨테이너 내부 파일 수정 (컨테이너만 변경, 이미지는 영향 없음)
+```
 
 #### 실제 예시
 
@@ -324,6 +328,7 @@ $ docker run -d my-custom-nginx:v2
 ## 4. 포트 매핑 및 접속 증거
 
 동일 이미지로 컨테이너 2개를 서로 다른 포트(8080, 8081)에 매핑해 실행했다.
+
 `-p 호스트포트:컨테이너포트` 로 외부(Mac)에서 컨테이너 내부 nginx(80)에 접속할 수 있다.
 
 ```bash
@@ -373,9 +378,9 @@ Docker 컨테이너는 **네트워크 네임스페이스**라는 독립된 네�
 
 ##### 1단계: 호스트의 포트 사용 현황 확인
 
-**macOS에서 특정 포트를 사용 중인 프로세스 찾기:**
-
 ```bash
+**macOS에서 특정 포트를 사용 중인 프로세스 찾기**
+
 # 포트 8080을 사용 중인 프로세스 확인
 $ lsof -i :8080
 COMMAND   PID     USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
@@ -388,7 +393,7 @@ USER: 실행 사용자
 NODE NAME: 포트 상태 (LISTEN = 대기 중)
 ```
 
-#### 2단계: 포트를 사용 중인 프로세스 종료 또는 변경
+##### 2단계: 포트를 사용 중인 프로세스 종료 또는 변경
 - 옵션 A: 기존 프로세스 종료
 ```bash
 # PID 1234인 프로세스 종료
@@ -407,7 +412,7 @@ $ docker stop web1
 $ docker run -d -p 9000:80 --name web1 my-web:1.0
 ```
 
-#### 3단계: 포트 충돌 해결 확인
+##### 3단계: 포트 충돌 해결 확인
 ```bash
 # 포트 8080이 이제 사용 가능한지 확인
 $ lsof -i :8080
@@ -419,33 +424,33 @@ CONTAINER ID   IMAGE        PORTS                  NAMES
 abc123def456   my-web:1.0   0.0.0.0:8080->80/tcp   web1
 ```
 
-#### 실제 포트 충돌 시나리오 및 해결
+##### 실제 포트 충돌 시나리오 및 해결
 - 시나리오: 포트 8080에서 충돌 발생
 ```bash
-# 1. 현재 상태 확인
+1. 현재 상태 확인
 $ docker ps
 CONTAINER ID   IMAGE        PORTS                  NAMES
 abc123def456   my-web:1.0   0.0.0.0:8080->80/tcp   web1
 
-# 2. 포트 8080 사용 현황 확인
+2. 포트 8080 사용 현황 확인
 $ lsof -i :8080
 COMMAND   PID     USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
 node      5678    user   12u  IPv4 0x5678efgh      0t0  TCP *:8080 (LISTEN)
 
-# 3. Node.js 프로세스가 포트 8080을 사용 중 → 종료
+3. Node.js 프로세스가 포트 8080을 사용 중 → 종료
 $ kill 5678
 
-# 4. 다시 확인
+4. 다시 확인
 $ lsof -i :8080
 # (출력 없음 = 포트 해제됨)
 
-# 5. 컨테이너 재시작
+5. 컨테이너 재시작
 $ docker restart web1
 
-# 6. 브라우저에서 http://localhost:8080 접속 성공
+6. 브라우저에서 http://localhost:8080 접속 성공
 ```
 
-#### 보안 고려사항
+##### 보안 고려사항
 
 | 주의사항	 | 설명 |
 |------|----------|
@@ -490,7 +495,7 @@ RUN ls -la
 
 
 #### 상대 경로 사용
-정의: 현재 작업 디렉토리(WORKDIR)를 기준으로 한 경로
+**정의:** 현재 작업 디렉토리(WORKDIR)를 기준으로 한 경로
 
 ```bash
 FROM nginx:alpine
@@ -500,43 +505,48 @@ RUN ls -la
 ```
 
 - 장점
+
 ✅ 코드가 간결함
+
 ✅ WORKDIR을 명시하면 구조가 명확
 
 
 - 단점
+
 ❌ WORKDIR이 설정되지 않으면 혼동 가능
+
 ❌ 여러 WORKDIR 변경 시 추적 어려움
 
 #### 실제 프로젝트에서의 경로 선택
-현재 프로젝트의 Dockerfile:
+현재 프로젝트의 Dockerfile
+```bash
 FROM nginx:alpine
 LABEL org.opencontainers.image.title="my-custom-nginx"
 COPY site/ /usr/share/nginx/html/
-
-선택 이유: 절대 경로 사용 (/usr/share/nginx/html/)
-
-nginx의 표준 웹 루트 위치로, 모든 nginx 사용자가 인식하는 경로
-명확하고 이식성이 높음
+```
+- 선택 이유
+a. 절대 경로 사용 (/usr/share/nginx/html/): nginx의 표준 웹 루트 위치로, 모든 nginx 사용자가 인식하는 경로로서, 명확하고 이식성이 높음
 
 
-상대 경로 사용 (site/)
+b. 상대 경로 사용 (site/): 빌드 컨텍스트(프로젝트 루트) 기준으로 site/ 디렉토리 지정, 프로젝트 구조에 따라 유연하게 대응
 
-빌드 컨텍스트(프로젝트 루트) 기준으로 site/ 디렉토리 지정
-프로젝트 구조에 따라 유연하게 대응
 
 #### 경로 오류 진단
 문제: 잘못된 상대 경로
 
+```bash
 FROM nginx:alpine
 COPY ./site/ ./html/  # ❌ 상대 경로만 사용 → 위치 불명확
+```
 
 해결: 절대 경로로 명시
 
+```bash
 FROM nginx:alpine
 COPY ./site/ /usr/share/nginx/html/  # ✅ 명확한 위치 지정
+```
 
-#### 베스트 프랙티스
+### 베스트 프랙티스
 
 ##### 1. WORKDIR로 기본 작업 디렉토리 설정 (절대 경로)
 WORKDIR /app
@@ -636,10 +646,12 @@ drwxr-xr-x   4 user  staff   128 Jul 30 14:25 .
 drwxr-xr-x   3 user  staff    96 Jul 30 14:20 ..
 -rw-r--r--   1 user  staff    30 Jul 30 14:20 host-file.txt
 -rw-r--r--   1 user  staff    24 Jul 30 14:25 container-file.txt
-결론: 호스트와 컨테이너가 동일한 파일을 실시간으로 공유합니다.
 ```
 
-####4단계: 컨테이너 삭제 후 호스트 파일 확인
+결론: 호스트와 컨테이너가 동일한 파일을 실시간으로 공유한다.
+
+
+#### 4단계: 컨테이너 삭제 후 호스트 파일 확인
 ```bash
 # 컨테이너 삭제
 $ docker rm -f bind-test
@@ -649,7 +661,7 @@ $ cat ~/docker-share/data/container-file.txt
 Created in container
 ```
 
-중요: 바인드마운트는 호스트 파일시스템을 사용하므로, 컨테이너 삭제 후에도 호스트 파일은 유지됩니다.
+중요: 바인드마운트는 호스트 파일시스템을 사용하므로, 컨테이너 삭제 후에도 호스트 파일은 유지된다.
 
 
 #### 바인드마운트 사용 사례
@@ -673,17 +685,18 @@ $ docker run -d --name nginx-custom \
   nginx:alpine
 ```
 
-#### 백업 및 복구 절차
+### 백업 및 복구 절차
 
 #### 백업 절차
-```bash
+
 1단계: 백업 디렉토리 생성
+```bash
 # 백업 저장소 생성
 $ mkdir -p ~/backups
 ```
 
-```bash
 2단계: 데이터 백업 (tar 압축)
+```bash
 # 바인드마운트 디렉토리를 tar로 압축
 $ tar -czf ~/backups/data-backup-$(date +%Y%m%d-%H%M%S).tar.gz ~/docker-share/data/
 
@@ -691,13 +704,13 @@ $ tar -czf ~/backups/data-backup-$(date +%Y%m%d-%H%M%S).tar.gz ~/docker-share/da
 $ ls -lh ~/backups/
 total 8
 -rw-r--r--  1 user  staff  512B Jul 30 14:30 data-backup-20260730-143000.tar.gz
-```
 
 설명: tar -czf: tar 파일 생성 (-c), gzip 압축 (-z), 파일명 지정 (-f)
 $(date +%Y%m%d-%H%M%S): 백업 시간을 파일명에 포함 (예: 20260730-143000)
+```
 
-```bash
 3단계: 정기 백업 자동화 (선택사항)
+```bash
 # cron 작업으로 매일 자정에 백업
 $ crontab -e
 
@@ -706,16 +719,18 @@ $ crontab -e
 ```
 
 #### 복구 절차
-```bash
+
 1단계: 현재 데이터 확인
+```bash
 $ ls -la ~/docker-share/data/
 total 16
 -rw-r--r--  1 user  staff  30 Jul 30 14:20 host-file.txt
 -rw-r--r--  1 user  staff  24 Jul 30 14:25 container-file.txt
 ```
 
-```bash
+
 2단계: 데이터 삭제 (복구 테스트)
+```bash
 # 실수로 파일 삭제
 $ rm ~/docker-share/data/container-file.txt
 
@@ -725,8 +740,9 @@ total 8
 -rw-r--r--  1 user  staff  30 Jul 30 14:20 host-file.txt
 ```
 
-```bash
+
 3단계: 백업에서 복구
+```bash
 # 백업 파일 확인
 $ ls ~/backups/
 data-backup-20260730-143000.tar.gz
@@ -743,15 +759,15 @@ $ ls -la ~/docker-share/data/
 total 16
 -rw-r--r--  1 user  staff  30 Jul 30 14:20 host-file.txt
 -rw-r--r--  1 user  staff  24 Jul 30 14:25 container-file.txt  # 복구됨!
-```
+
 
 - 설명
 
 tar -xzf: tar 파일 추출 (-x), gzip 해제 (-z), 파일명 지정 (-f)
 -C 경로: 추출 대상 디렉토리 지정
+```
 
-
-#### 백업/복구 체크리스트
+### 백업/복구 체크리스트
 | 단계 | 명령 | 확인 사항 |
 |------|------|-----------|
 | 백업 | `tar -czf ~/backups/backup.tar.gz 경로/` | 파일 생성 여부, 파일 크기 |
@@ -759,7 +775,7 @@ tar -xzf: tar 파일 추출 (-x), gzip 해제 (-z), 파일명 지정 (-f)
 | 복구 | `tar -xzf ~/backups/backup.tar.gz -C /` | 파일 복구 여부 |
 | 복구 검증 | `ls -la 복구경로/` | 파일 개수, 타임스탬프 |
 
-#### 바인드마운트 주의사항
+### 바인드마운트 주의사항
 | 주의사항 | 설명 | 해결 방법 |
 |----------|------|-----------|
 | 권한 문제 | 컨테이너 사용자와 호스트 사용자의 UID 불일치 | `--user` 옵션으로 사용자 지정 |
@@ -772,7 +788,7 @@ tar -xzf: tar 파일 추출 (-x), gzip 해제 (-z), 파일명 지정 (-f)
 
 Docker 사용 중 발생하는 일반적인 문제와 해결 방법을 정리했다.
 
-### 트러블슈팅 명령어 및 실행 시간 표
+### 트러블슈팅 명령어 및 실행 시간표
 
 | 문제 | 진단 명령 | 예상 실행시간 | 출력 예시 | 해결 방법 |
 |------|---------|------------|---------|---------|
@@ -950,7 +966,10 @@ $ docker network inspect bridge
 ```
 
 #### 8. 트러블슈팅 체크리스트
+
 - 컨테이너 문제 발생 시 진단 순서
+
+```bash
 1️⃣ 컨테이너 상태 확인
    └─ docker ps -a
    └─ STATUS 확인: Up / Exited?
@@ -974,6 +993,7 @@ $ docker network inspect bridge
 6️⃣ 네트워크 확인 (통신 관련)
    └─ docker network inspect 네트워크명
    └─ 컨테이너 IP 주소 확인
+```
 
 - 일반적인 에러 메시지 및 해결
 | 에러 메시지 | 원인 | 해결 방법 |
