@@ -60,7 +60,7 @@ developer-workstation/
       - 재귀적 삭제로 디렉토리 구조 완전 제거
 
 ## ✅ 수행 체크리스트
-
+```
 -[x] 터미널 기본 조작 및 폴더 구성
 -[x] 파일/디렉토리 권한 변경 실습
 -[x] Docker 설치/점검 (version, info)
@@ -70,7 +70,7 @@ developer-workstation/
 -[x] 포트 매핑 접속 (8080, 8081 — 2회)
 -[x] 볼륨(데이터 영속성) 검증
 -[x] Git 설정 및 GitHub 연동
-
+```
 ---
 
 ## 0. 터미널 기초 & 파일 권한 실습
@@ -266,7 +266,7 @@ ubuntu:latest        3131b4cc82a7
 
 Docker 이미지는 **빌드된 후 변경될 수 없는 불변 객체**이다.
 
-      #### 이미지 불변성의 의미
+   #### 이미지 불변성의 의미
 ```bash
 Dockerfile 작성
 ↓
@@ -318,7 +318,7 @@ $ docker exec web2 ls /usr/share/nginx/html/
 | 배포 안정성 | 프로덕션에서 동일한 이미지 사용 보장 |
 
    ### 변경이 필요하면?
-      - 이미지를 수정하려면 새로운 이미지를 빌드해야 한다.
+   - 이미지를 수정하려면 새로운 이미지를 빌드해야 한다.
 
    ### Dockerfile 수정
 ```bash
@@ -403,7 +403,7 @@ NODE NAME: 포트 상태 (LISTEN = 대기 중)
 ```
 
    ##### 2단계: 포트를 사용 중인 프로세스 종료 또는 변경
-      - 옵션 A: 기존 프로세스 종료
+   - 옵션 A: 기존 프로세스 종료
 ```bash
 # PID 1234인 프로세스 종료
 $ kill 1234
@@ -412,7 +412,7 @@ $ kill 1234
 $ kill -9 1234
 ```
 
-      - 옵션 B: 컨테이너 포트 매핑 변경
+   - 옵션 B: 컨테이너 포트 매핑 변경
 ```bash
 # 기존 컨테이너 중지
 $ docker stop web1
@@ -473,7 +473,7 @@ $ docker restart web1
 
 Dockerfile 작성 시 `COPY`, `WORKDIR`, `RUN` 등에서 경로를 지정할 때, **절대 경로**와 **상대 경로** 중 어느 것을 선택할지 결정해야 한다.
 
-      #### 경로 선택 기준표
+   #### 경로 선택 기준표
 
 | 상황 | 권장 경로 | 이유 | 예시 |
 |------|---------|------|------|
@@ -483,9 +483,9 @@ Dockerfile 작성 시 `COPY`, `WORKDIR`, `RUN` 등에서 경로를 지정할 때
 | **빌드 컨텍스트 내 파일** | 상대 경로 | 빌드 컨텍스트 기준으로 동작 | `COPY ./docker/config.json /etc/app/` |
 
 
-      #### 절대 경로 사용 (권장)
+   #### 절대 경로 사용 (권장)
 
-      **정의:** 컨테이너 루트(`/`)부터 시작하는 전체 경로
+   **정의:** 컨테이너 루트(`/`)부터 시작하는 전체 경로
 
 ```dockerfile
 FROM nginx:alpine
@@ -494,17 +494,17 @@ WORKDIR /usr/share/nginx/html/
 RUN ls -la
 ```
 
-      - 장점
-      ✅ 경로가 명확하고 예측 가능
-      ✅ 다른 사람이 읽기 쉬움
-      ✅ 컨테이너 내 정확한 위치 보장
+   - 장점
+   ✅ 경로가 명확하고 예측 가능
+   ✅ 다른 사람이 읽기 쉬움
+   ✅ 컨테이너 내 정확한 위치 보장
 
-      - 단점
-      ❌ 타이핑이 길어짐
+   - 단점
+   ❌ 타이핑이 길어짐
 
 
-      #### 상대 경로 사용
-      **정의:** 현재 작업 디렉토리(WORKDIR)를 기준으로 한 경로
+   #### 상대 경로 사용
+   **정의:** 현재 작업 디렉토리(WORKDIR)를 기준으로 한 경로
 
 ```bash
 FROM nginx:alpine
@@ -513,14 +513,14 @@ COPY site/ .
 RUN ls -la
 ```
 
-      - 장점
-      ✅ 코드가 간결함
-      ✅ WORKDIR을 명시하면 구조가 명확
+   - 장점
+   ✅ 코드가 간결함
+   ✅ WORKDIR을 명시하면 구조가 명확
 
 
-      - 단점
-      ❌ WORKDIR이 설정되지 않으면 혼동 가능
-      ❌ 여러 WORKDIR 변경 시 추적 어려움
+   - 단점
+   ❌ WORKDIR이 설정되지 않으면 혼동 가능
+   ❌ 여러 WORKDIR 변경 시 추적 어려움
 
    ### 실제 프로젝트에서의 경로 선택
    - 현재 프로젝트의 Dockerfile
@@ -553,14 +553,14 @@ COPY ./site/ /usr/share/nginx/html/  # ✅ 명확한 위치 지정
 
    ### 베스트 프랙티스
 
-      ##### 1. WORKDIR로 기본 작업 디렉토리 설정 (절대 경로)
-               WORKDIR /app
+   ##### 1. WORKDIR로 기본 작업 디렉토리 설정 (절대 경로)
+            WORKDIR /app
 
-      ##### 2. 상대 경로로 파일 복사 (WORKDIR 기준)
-               COPY . .
+   ##### 2. 상대 경로로 파일 복사 (WORKDIR 기준)
+            COPY . .
 
-      ##### 3. 필요시 절대 경로로 명시적 지정
-               RUN mkdir -p /var/log/app
+   ##### 3. 필요시 절대 경로로 명시적 지정
+            RUN mkdir -p /var/log/app
 
 ---
 
@@ -713,31 +713,31 @@ $ docker run -d --name nginx-custom \
 
    ### 백업 및 복구 절차
 
-      #### 백업 절차
+   #### 백업 절차
 
-      1단계: 백업 디렉토리 생성
-      - 백업 저장소 생성
+   1단계: 백업 디렉토리 생성
+   - 백업 저장소 생성
 ```bash
 $ mkdir -p ~/backups
 ```
 
-      2단계: 데이터 백업 (tar 압축)
-      - 바인드마운트 디렉토리를 tar로 압축
+   2단계: 데이터 백업 (tar 압축)
+   - 바인드마운트 디렉토리를 tar로 압축
 ```bash
 $ tar -czf ~/backups/data-backup-$(date +%Y%m%d-%H%M%S).tar.gz ~/docker-share/data/
 ```
 
-      3단계: 백업 파일 확인
+   3단계: 백업 파일 확인
 ```bash
 $ ls -lh ~/backups/
 total 8
 -rw-r--r--  1 user  staff  512B Jul 30 14:30 data-backup-20260730-143000.tar.gz
 ```
-      - 설명: tar -czf: tar 파일 생성 (-c), gzip 압축 (-z), 파일명 지정 (-f)
+   - 설명: tar -czf: tar 파일 생성 (-c), gzip 압축 (-z), 파일명 지정 (-f)
       $(date +%Y%m%d-%H%M%S): 백업 시간을 파일명에 포함 (예: 20260730-143000)
 
 
-      4단계: 정기 백업 자동화 (선택사항)
+   4단계: 정기 백업 자동화 (선택사항)
 ```bash
 # cron 작업으로 매일 자정에 백업
 $ crontab -e
@@ -746,9 +746,9 @@ $ crontab -e
 0 0 * * * tar -czf ~/backups/data-backup-$(date +\%Y\%m\%d-\%H\%M\%S).tar.gz ~/docker-share/data/
 ```
 
-      #### 복구 절차
+   #### 복구 절차
 
-      1단계: 현재 데이터 확인
+   1단계: 현재 데이터 확인
 ```bash
 $ ls -la ~/docker-share/data/
 total 16
@@ -757,14 +757,14 @@ total 16
 ```
 
 
-      2단계: 데이터 삭제 (복구 테스트)
+   2단계: 데이터 삭제 (복구 테스트)
 
-      - 실수로 파일 삭제
+   - 실수로 파일 삭제
 ```bash
 $ rm ~/docker-share/data/container-file.txt
 ```
 
-      - 확인
+   - 확인
 ```bash
 $ ls -la ~/docker-share/data/
 total 8
@@ -772,25 +772,25 @@ total 8
 ```
 
 
-      3단계: 백업에서 복구
-      - 백업 파일 확인
+   3단계: 백업에서 복구
+   - 백업 파일 확인
 ```bash
 $ ls ~/backups/
 data-backup-20260730-143000.tar.gz
 ```
 
-      - 복구 (기존 디렉토리 덮어쓰기)
+   - 복구 (기존 디렉토리 덮어쓰기)
 ```bash
 $ tar -xzf ~/backups/data-backup-20260730-143000.tar.gz -C /
 ```
 
-      - 또는 특정 디렉토리에만 복구
+    - 또는 특정 디렉토리에만 복구
 ```bash
 $ mkdir -p ~/docker-share-restored
 $ tar -xzf ~/backups/data-backup-20260730-143000.tar.gz -C ~/docker-share-restored
 ```
 
-      - 복구 확인
+   - 복구 확인
 ```bash
 $ ls -la ~/docker-share/data/
 total 16
@@ -798,7 +798,7 @@ total 16
 -rw-r--r--  1 user  staff  24 Jul 30 14:25 container-file.txt  # 복구됨!
 ```
 
-      - 설명
+   - 설명
 ```bash
 tar -xzf: tar 파일 추출 (-x), gzip 해제 (-z), 파일명 지정 (-f)
 -C 경로: 추출 대상 디렉토리 지정
@@ -840,17 +840,17 @@ Docker 사용 중 발생하는 일반적인 문제와 해결 방법을 정리했
 
    ### 주요 진단 명령어 상세 설명
 
-      #### 1. 컨테이너 상태 확인
+   #### 1. 컨테이너 상태 확인
 
 
-      - 실행 중인 컨테이너만 표시
+   - 실행 중인 컨테이너만 표시
 ```bash
 $ docker ps
 CONTAINER ID   IMAGE        STATUS        PORTS                  NAMES
 abc123def456   my-web:1.0   Up 2 minutes  0.0.0.0:8080->80/tcp   web1
 ```
 
-      - 모든 컨테이너 표시 (중지된 것 포함)
+   - 모든 컨테이너 표시 (중지된 것 포함)
 ```bash
 $ docker ps -a
 CONTAINER ID   IMAGE        STATUS                     PORTS     NAMES
@@ -860,19 +860,19 @@ def456ghi789   my-web:1.0   Exited (1) 5 minutes ago            web2
 # 실행 시간: ~1초
 ```
 
-      - 진단 포인트
+   - 진단 포인트
 
       STATUS: 컨테이너 상태 (Up = 실행 중, Exited = 중지됨)
       Exited (1): 에러 코드 1로 종료됨 → docker logs 확인 필요
 
-   ### 컨테이너 로그 출력
+   #### 컨테이너 로그 출력
 ```bash
 $ docker logs web1
 [nginx] 2026-07-30 14:25:30 Starting nginx...
 [nginx] 2026-07-30 14:25:31 nginx started successfully
 ```
 
-   ### 실시간 로그 모니터링
+   #### 실시간 로그 모니터링
 ```bash
 $ docker logs -f web1
 [nginx] 2026-07-30 14:25:30 Starting nginx...
@@ -880,29 +880,29 @@ $ docker logs -f web1
 # (Ctrl+C로 종료)
 ```
 
-   ### 최근 50줄만 출력
+   #### 최근 50줄만 출력
 ```bash
 $ docker logs --tail 50 web1
 ```
-   ### 실행 시간: ~1초 (실시간 모니터링은 지속)
+   #### 실행 시간: ~1초 (실시간 모니터링은 지속)
 
-   ### 진단 포인트
+   #### 진단 포인트
 
       STATUS: 컨테이너 상태 (Up = 실행 중, Exited = 중지됨)
       Exited (1): 에러 코드 1로 종료됨 → docker logs 확인 필요
 
 
 
-      ### 2. 컨테이너 로그 확인
+   ### 2. 컨테이너 로그 확인
 
-      - 컨테이너 로그 출력
+   - 컨테이너 로그 출력
 ```bash
 $ docker logs web1
 [nginx] 2026-07-30 14:25:30 Starting nginx...
 [nginx] 2026-07-30 14:25:31 nginx started successfully
 ```
 
-      - 실시간 로그 모니터링
+   - 실시간 로그 모니터링
 ```bash
 $ docker logs -f web1
 [nginx] 2026-07-30 14:25:30 Starting nginx...
@@ -915,7 +915,7 @@ $ docker logs --tail 50 web1
 # 실행 시간: ~1초 (실시간 모니터링은 지속)
 ```
 
-   #### 3. 포트 충돌 진단
+   ### 3. 포트 충돌 진단
 ```bash
 # macOS에서 포트 8080 사용 현황 확인
 $ lsof -i :8080
@@ -930,7 +930,7 @@ $ lsof -i :8080
 # (출력 없음 = 포트 해제됨)
 ```
 
-   #### 4. 디스크 사용량 확인
+   ### 4. 디스크 사용량 확인
 
    - Docker 시스템 전체 디스크 사용량
 ```bash
@@ -957,7 +957,7 @@ Total reclaimed space: 1.8GB
 # 실행 시간: 10초~1분 (삭제 대상 크기에 따라)
 ```
 
-   #### 5. 컨테이너 리소스 사용량 모니터링
+   ### 5. 컨테이너 리소스 사용량 모니터링
 ```bash
 # 실시간 리소스 모니터링
 $ docker stats web1
@@ -971,7 +971,7 @@ $ docker stats --no-stream web1
 # (한 번만 출력)
 ```
 
-   #### 6. 이미지 레이어 확인
+   ### 6. 이미지 레이어 확인
 
    - 이미지의 각 레이어 크기 확인
 ```bash
@@ -990,7 +990,7 @@ jkl012mno345   2 weeks ago    FROM nginx:alpine                               42
    2. 여러 RUN 명령을 && 로 연결하여 레이어 수 감소
 
 
-   #### 7. 네트워크 진단
+   ### 7. 네트워크 진단
 
    - Docker 네트워크 목록
 ```bash
@@ -1021,7 +1021,7 @@ $ docker network inspect bridge
 # 실행 시간: ~1초
 ```
 
-   #### 8. 트러블슈팅 체크리스트
+   ### 8. 트러블슈팅 체크리스트
 
    - 컨테이너 문제 발생 시 진단 순서
 
